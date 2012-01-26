@@ -7,12 +7,13 @@ FFT fft;
 String windowName;
 Data data;
 AudioBuffer buffer;
+
 float[] peakDecay;
 float peakDecayFactor, eRadius, eRadius1, cum, errTol;
 BeatDetect beat;
 ArrayList bands;
 boolean hasAnalyzed;
-int fftspacing, wavespacing, numBreaks, multfactor,numofChanges, bsize;
+int fftspacing, wavespacing, numBreaks, multfactor, numofChanges, bsize;
 
 void setup()
 {
@@ -32,7 +33,7 @@ void setup()
   eRadius = 20;
 
 
-  song = minim.loadFile("prettylights.mp3", bsize);
+  song = minim.loadFile("sample.mp3", bsize); // 
   beat = new BeatDetect();
   beat.setSensitivity(100);
   ellipseMode(CENTER_RADIUS);
@@ -68,7 +69,7 @@ void draw()
   }
 
   //drawing the wave form
-  for(int i = 0; i < song.bufferSize() - 1; i++)
+  for (int i = 0; i < song.bufferSize() - 1; i++)
   {
     line(i*wavespacing, 50 + song.left.get(i)*50, i*wavespacing+wavespacing, 50 + song.left.get(i+1)*50);
     line(i*wavespacing, 150 + song.right.get(i)*50, i*wavespacing+wavespacing, 150 + song.right.get(i+1)*50);
@@ -76,23 +77,23 @@ void draw()
 
   //float[] fftspectrum = new float[fft.avgSize()];
   //drawing the fft
-  for(int i = 0; i < fft.avgSize(); i++)
+  for (int i = 0; i < fft.avgSize(); i++)
   {
     // draw the line for frequency band i, scaling it by 4 so we can see it a bit better
-    rect( i*fftspacing, height - abs(fft.getAvg(i)*multfactor)-5,fftspacing, abs(fft.getAvg(i)*multfactor)+5);
+    rect( i*fftspacing, height - abs(fft.getAvg(i)*multfactor)-5, fftspacing, abs(fft.getAvg(i)*multfactor)+5);
     //    fftspectrum[i] = abs(fft.getAvg(i)*multfactor);
   }
   //  data.add(fftspectrum);
 
   fill(128);
 
-//  float[] averages = new float[numBreaks];
+  //  float[] averages = new float[numBreaks];
   float sum;
   float maxnum = 0;
   //operations for every band group
 
   for (int i = 0; i< bands.size(); i=i+2) {
-    stroke(255,0,0);
+    stroke(255, 0, 0);
     sum = 0;
     maxnum = 0;
     //summing and finding the greatest values;
@@ -119,15 +120,15 @@ void draw()
     else
       stroke(0);
     //change line
-    line(fftspacing*((Integer) bands.get(i)), height/2, fftspacing*((Integer) bands.get(i+1)+1),height/2);
+    line(fftspacing*((Integer) bands.get(i)), height/2, fftspacing*((Integer) bands.get(i+1)+1), height/2);
 
-    stroke(255,0,0);
+    stroke(255, 0, 0);
     //peak line
     line(fftspacing*((Integer) bands.get(i)), height - peakDecay[i]-5, fftspacing*((Integer) bands.get(i+1)+1), 
     height- peakDecay[i]-5);
     //averages[i] = sum;
     //average line
-    stroke(0,255,0);
+    stroke(0, 255, 0);
     line(fftspacing*((Integer) bands.get(i)), height - average-5, fftspacing*((Integer) bands.get(i+1)+1), height- average-5);
   }
   //for coloring the circle
@@ -199,6 +200,9 @@ void keyReleased()
     errTol = errTol +.1;
     System.out.println(errTol);
   }
+  if (key == 'y'){
+   save("screenshot.tif"); 
+  }
 }
 void analyzeSong() {
 
@@ -233,7 +237,7 @@ void analyzeSong() {
   data.add(bands);
   for (int i = 0; i < bands.size(); i++)
     //System.out.print(bands.get(i) + " ");
-   numBreaks = bands.size();
+    numBreaks = bands.size();
 
   peakDecay = new float[numBreaks];
   for (int i = 0; i < numBreaks; i++)
@@ -244,8 +248,8 @@ void analyzeSong() {
 
 void stop()
 {
-  data.endSave("test.txt");
-  // always close Minim audio classes when you finish with them
+  // data.endSave("test.txt"); uncomment if save information is needed
+  // closing Minim
   song.close();
   minim.stop();
 
